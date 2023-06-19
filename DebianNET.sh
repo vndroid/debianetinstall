@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 while [[ $# -ge 1 ]]; do
   case $1 in
@@ -38,7 +38,7 @@ while [[ $# -ge 1 ]]; do
     esac
   done
 
-[ $EUID -ne 0 ] && echo "Error:This script must be run as root!" && exit 1
+[ $EUID -ne 0 ] && echo "Error: This script must be run as root!" && exit 1
 [ -f /boot/grub/grub.cfg ] && GRUBOLD='0' && GRUBDIR='/boot/grub' && GRUBFILE='grub.cfg'
 [ -z $GRUBDIR ] && [ -f /boot/grub2/grub.cfg ] && GRUBOLD='0' && GRUBDIR='/boot/grub2' && GRUBFILE='grub.cfg'
 [ -z $GRUBDIR ] && [ -f /boot/grub/grub.conf ] && GRUBOLD='1' && GRUBDIR='/boot/grub' && GRUBFILE='grub.conf'
