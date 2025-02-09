@@ -1,42 +1,42 @@
 #!/usr/bin/env bash
 
 while [[ $# -ge 1 ]]; do
-  case $1 in
-    -v|--ver)
-      shift
-      VERtmp="$1"
-      shift
-      ;;
-    -d|--debian|--ubuntu)
-      shift
-      vDEBtmp="$1"
-      shift
-      ;;
-    -p|--password)
-      shift
-      WDtmp="$1"
-      shift
-      ;;
-    -a|--auto)
-      shift
-      INStmp='auto'
-      ;;
-    -m|--manual)
-      shift
-      INStmp='manual'
-      ;;
-    -apt|--mirror)
-      shift
-      isMirror='1'
-      tmpMirror="$1"
-      shift
-      ;;
-    *)
-      echo -ne " Usage:\n\tbash $0\t-d/--debian [10/buster|11/bullseye|\033[33m\033[04m12/bookworm\033[0m]\n\t\t\t\t-v/--ver [32/i386|\033[33m\033[04m64/amd64\033[0m]\n\t\t\t\t-apt/--mirror\n\t\t\t\t-a/--auto\n\t\t\t\t-m/--manual\n"
-      exit 1;
-      ;;
-    esac
-  done
+    case $1 in
+        -v|--ver)
+            shift
+            VERtmp="$1"
+            shift
+            ;;
+        -d|--debian|--ubuntu)
+            shift
+            vDEBtmp="$1"
+            shift
+            ;;
+        -p|--password)
+            shift
+            WDtmp="$1"
+            shift
+            ;;
+        -a|--auto)
+            shift
+            INStmp='auto'
+            ;;
+        -m|--manual)
+            shift
+            INStmp='manual'
+            ;;
+        -apt|--mirror)
+            shift
+            isMirror='1'
+            tmpMirror="$1"
+            shift
+            ;;
+        *)
+            echo -ne " Usage:\n\tbash $0\t-d/--debian [10/buster|11/bullseye|\033[33m\033[04m12/bookworm\033[0m]\n\t\t\t\t-v/--ver [32/i386|\033[33m\033[04m64/amd64\033[0m]\n\t\t\t\t-apt/--mirror\n\t\t\t\t-a/--auto\n\t\t\t\t-m/--manual\n"
+            exit 1;
+            ;;
+        esac
+    done
 
 [ $EUID -ne 0 ] && echo "Error: This script must be run as root!" && exit 1
 [ -f /boot/grub/grub.cfg ] && GRUBOLD='0' && GRUBDIR='/boot/grub' && GRUBFILE='grub.cfg'
@@ -131,19 +131,19 @@ GATE="$(ip route show |grep -o 'default via [0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3
 [ -n "$GATE" ] && [ -n "$MASK" ] && [ -n "$IPv4" ] || {
 echo "Not found \`ip command\`, It will use \`route command\`."
 ipNum() {
-  local IFS='.'
-  read ip1 ip2 ip3 ip4 <<<"$1"
-  echo $((ip1*(1<<24)+ip2*(1<<16)+ip3*(1<<8)+ip4))
+    local IFS='.'
+    read ip1 ip2 ip3 ip4 <<<"$1"
+    echo $((ip1*(1<<24)+ip2*(1<<16)+ip3*(1<<8)+ip4))
 }
 
 SelectMax(){
 ii=0
 for IPITEM in `route -n |awk -v OUT=$1 '{print $OUT}' |grep '[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}'`
-  do
-    NumTMP="$(ipNum $IPITEM)"
-    eval "arrayNum[$ii]='$NumTMP,$IPITEM'"
-    ii=$[$ii+1]
-  done
+    do
+        NumTMP="$(ipNum $IPITEM)"
+        eval "arrayNum[$ii]='$NumTMP,$IPITEM'"
+        ii=$[$ii+1]
+    done
 echo ${arrayNum[@]} |sed 's/\s/\n/g' |sort -n -k 1 -t ',' |tail -n1 |cut -d',' -f2
 }
 
@@ -164,8 +164,8 @@ ICFGN="$(find /etc/network/interfaces.d -name '*.cfg' |wc -l)" || ICFGN='0'
 [ "$ICFGN" -ne '0' ] && {
 for NetCFG in `ls -1 /etc/network/interfaces.d/*.cfg`
  do 
-  [[ -z "$(cat $NetCFG | sed -n '/iface.*inet static/p')" ]] && AutoNet='1' || AutoNet='0'
-  [ "$AutoNet" -eq '0' ] && break
+    [[ -z "$(cat $NetCFG | sed -n '/iface.*inet static/p')" ]] && AutoNet='1' || AutoNet='0'
+    [ "$AutoNet" -eq '0' ] && break
 done
 }
 }
@@ -175,12 +175,12 @@ ICFGN="$(find /etc/sysconfig/network-scripts -name 'ifcfg-*' |grep -v 'lo'|wc -l
 [ "$ICFGN" -ne '0' ] && {
 for NetCFG in `ls -1 /etc/sysconfig/network-scripts/ifcfg-* |grep -v 'lo$' |grep -v ':[0-9]\{1,\}'`
  do 
-  [[ -n "$(cat $NetCFG | sed -n '/BOOTPROTO.*[dD][hH][cC][pP]/p')" ]] && AutoNet='1' || {
-  AutoNet='0' && . $NetCFG
-  [ -n $NETMASK ] && MASK="$NETMASK"
-  [ -n $GATEWAY ] && GATE="$GATEWAY"
+    [[ -n "$(cat $NetCFG | sed -n '/BOOTPROTO.*[dD][hH][cC][pP]/p')" ]] && AutoNet='1' || {
+    AutoNet='0' && . $NetCFG
+    [ -n $NETMASK ] && MASK="$NETMASK"
+    [ -n $GATEWAY ] && GATE="$GATEWAY"
 }
-  [ "$AutoNet" -eq '0' ] && break
+    [ "$AutoNet" -eq '0' ] && break
 done
 }
 }
@@ -197,7 +197,7 @@ CFG2="$(awk '/menuentry /{print NR}' $GRUBDIR/$GRUBFILE|head -n 2 |tail -n 1)"
 CFG1=""
 for CFGtmp in `awk '/}/{print NR}' $GRUBDIR/$GRUBFILE`
  do
-  [ $CFGtmp -gt "$CFG0" -a $CFGtmp -lt "$CFG2" ] && CFG1="$CFGtmp";
+    [ $CFGtmp -gt "$CFG0" -a $CFGtmp -lt "$CFG2" ] && CFG1="$CFGtmp";
  done
 [ -z "$CFG1" ] && {
 echo "Error! read $GRUBFILE. "
@@ -251,7 +251,7 @@ GRUBPATCH='0'
 sed -i ''${CFG0}'i\\n' $GRUBDIR/$GRUBFILE
 sed -i ''${CFG0}'r /tmp/grub.new' $GRUBDIR/$GRUBFILE
 [ -z $AutoNet ] && echo "Error, Not found interfaces config." && exit 1
-[ -f  $GRUBDIR/grubenv ] && sed -i 's/saved_entry/#saved_entry/g' $GRUBDIR/grubenv
+[ -f    $GRUBDIR/grubenv ] && sed -i 's/saved_entry/#saved_entry/g' $GRUBDIR/grubenv
 [ -d /boot/tmp ] && rm -rf /boot/tmp
 mkdir -p /boot/tmp/
 cd /boot/tmp/
